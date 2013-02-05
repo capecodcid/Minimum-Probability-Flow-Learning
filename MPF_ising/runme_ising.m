@@ -6,11 +6,18 @@
 % Attribution-Noncommercial License.
 % (http://creativecommons.org/licenses/by-nc/3.0/)
 
+addpath ../3rd_party_code/minFunc/
+
 description = 'd=50, 10000 samples'
 
 % initialize
-d = 50; % number of units
-nsamples = 10000; % number of training samples
+d = 24; % number of units
+nsamples = 98381; % number of training samples
+%nsamples = 187769;
+%nsamples_new = 500000;
+
+%d = 50; % number of units
+%nsamples = 100; % number of training samples
 maxlinesearch = 10000; % this number is excessive just to be safe!!!!!! learning works fine if this is just a few hundred
 independent_steps = 10*d; % the number of gibbs sampling steps to take between samples
 
@@ -30,19 +37,21 @@ else
    randn('state',355672);
 end
 
-% choose a random coupling matrix to generate the test data
+% % choose a random coupling matrix to generate the test data
 J = randn( d, d ) / sqrt(d) * 3.;
-J = J + J';
+J = J + J';                             % !ath - symmetrize J
 J = J/2;
 J = J - diag(diag(J)); % set the diagonal so all the units are 0 bias
 J = J - diag(sum(J));
-fprintf( 'Generating %d training samples\n', nsamples );
+% fprintf( 'Generating %d training samples\n', nsamples );
 burnin = 100*d;
-% and generate the test data ...
-t_samp = tic();
-Xall = sample_ising( J, nsamples, burnin, independent_steps );
-t_samp = toc(t_samp);
-fprintf( 'training sample generation in %f seconds \n', t_samp );
+% % and generate the test data ...
+% t_samp = tic();
+% Xall = sample_ising( J, nsamples, burnin, independent_steps );
+% t_samp = toc(t_samp);
+% fprintf( 'training sample generation in %f seconds \n', t_samp );
+
+Xall = bint;
 
 % randomly initialize the parameter matrix we're going to try to learn
 % note that the bias units lie on the diagonal of J
@@ -69,68 +78,70 @@ Jnew = reshape(Jnew, size(J));
 t_min = toc(t_min);
 fprintf( 'parameter estimation in %f seconds \n', t_min );
 
-fprintf( '\nGenerating samples using learned parameters for comparison...\n' );
-Xnew = sample_ising( Jnew, nsamples, burnin, independent_steps );
-fprintf( 'sample generation with learned parameters in %f seconds \n', t_samp );
-
-% generate correlation matrices for the original and recovered coupling matrices
-mns = mean( Xall, 2 );
-Xt = Xall - mns(:, ones(1,nsamples));
-sds = sqrt(mean( Xt.^2, 2 ));
-Xt = Xt./sds(:, ones(1,nsamples));
-Corr = Xt*Xt'/nsamples;
-mns = mean( Xnew, 2 );
-Xt = Xnew - mns(:, ones(1,nsamples));
-sds = sqrt(mean( Xt.^2, 2 ));
-Xt = Xt./sds(:, ones(1,nsamples));
-Corrnew = Xt*Xt'/nsamples;
-
-Jdiff = J - Jnew;
-Corrdiff = Corr - Corrnew;
-jmn = min( [J(:); Jnew(:); Jdiff(:)] );
-jmx = max( [J(:); Jnew(:); Jdiff(:)] );
-cmn = min( [Corr(:); Corrnew(:); Corrdiff(:)] );
-cmx = max( [Corr(:); Corrnew(:); Corrdiff(:)] );
-
-% show the original, recovered and differences in coupling matrices
-figure();
-subplot(2,3,1);
-imagesc( J, [jmn, jmx] );
-axis image;
-colorbar;
-title( '{J}_{ }' );
-subplot(2,3,2);
-imagesc( Jnew, [jmn, jmx] );
-axis image;
-colorbar;
-title( '{J}_{new}' );
-subplot(2,3,3);
-imagesc( Jdiff, [jmn, jmx] );
-axis image;
-colorbar;
-title( '{J}_{ } - {J}_{new}' );
-
-% show the original, recovered and differences in correlation matrices
-subplot(2,3,4);
-imagesc( Corr, [cmn,cmx] );
-axis image;
-colorbar;
-title( '{C}_{ }' );    
-subplot(2,3,5);
-imagesc( Corrnew, [cmn,cmx] );
-axis image;
-colorbar;
-title( '{C}_{new}' );    
-subplot(2,3,6);
-imagesc( Corrdiff, [cmn,cmx] );
-axis image;
-colorbar;
-title( '{C}_{ } - {C}_{new}' );    
-
-figure();
-plot( Corr(:), Corrnew(:), '.' );
-axis([cmn,cmx,cmn,cmx]);
-axis image;
-xlabel( '{C}_{ }' );
-ylabel( '{C}_{new}' );
-title( 'scatter plot of correlations for original and recovered parameters' );
+% fprintf( '\nGenerating samples using learned parameters for comparison...\n' );
+% t_samp = tic();
+% Xnew = sample_ising( Jnew, nsamples_new, burnin, independent_steps );
+% t_samp = toc(t_samp)
+% fprintf( 'sample generation with learned parameters in %f seconds \n', t_samp );
+% 
+% % generate correlation matrices for the original and recovered coupling matrices
+% mns = mean( Xall, 2 );
+% Xt = Xall - mns(:, ones(1,nsamples));
+% sds = sqrt(mean( Xt.^2, 2 ));
+% Xt = Xt./sds(:, ones(1,nsamples));
+% Corr = Xt*Xt'/nsamples;
+% mns = mean( Xnew, 2 );
+% Xt = Xnew - mns(:, ones(1,nsamples_new));
+% sds = sqrt(mean( Xt.^2, 2 ));
+% Xt = Xt./sds(:, ones(1,nsamples_new));
+% Corrnew = Xt*Xt'/nsamples_new;
+% 
+% Jdiff = J - Jnew;
+% Corrdiff = Corr - Corrnew;
+% jmn = min( [J(:); Jnew(:); Jdiff(:)] );
+% jmx = max( [J(:); Jnew(:); Jdiff(:)] );
+% cmn = min( [Corr(:); Corrnew(:); Corrdiff(:)] );
+% cmx = max( [Corr(:); Corrnew(:); Corrdiff(:)] );
+% 
+% % show the original, recovered and differences in coupling matrices
+% figure();
+% subplot(2,3,1);
+% imagesc( J, [jmn, jmx] );
+% axis image;
+% colorbar;
+% title( '{J}_{ }' );
+% subplot(2,3,2);
+% imagesc( Jnew, [jmn, jmx] );
+% axis image;
+% colorbar;
+% title( '{J}_{new}' );
+% subplot(2,3,3);
+% imagesc( Jdiff, [jmn, jmx] );
+% axis image;
+% colorbar;
+% title( '{J}_{ } - {J}_{new}' );
+% 
+% % show the original, recovered and differences in correlation matrices
+% subplot(2,3,4);
+% imagesc( Corr, [cmn,cmx] );
+% axis image;
+% colorbar;
+% title( '{C}_{ }' );    
+% subplot(2,3,5);
+% imagesc( Corrnew, [cmn,cmx] );
+% axis image;
+% colorbar;
+% title( '{C}_{new}' );    
+% subplot(2,3,6);
+% imagesc( Corrdiff, [cmn,cmx] );
+% axis image;
+% colorbar;
+% title( '{C}_{ } - {C}_{new}' );    
+% 
+% figure();
+% plot( Corr(:), Corrnew(:), '.' );
+% axis([cmn,cmx,cmn,cmx]);
+% axis image;
+% xlabel( '{C}_{ }' );
+% ylabel( '{C}_{new}' );
+% title( 'scatter plot of correlations for original and recovered parameters' );
