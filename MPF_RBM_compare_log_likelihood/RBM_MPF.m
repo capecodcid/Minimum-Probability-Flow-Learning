@@ -62,7 +62,7 @@ for i = 1:n_learns
 end
 
 Wmpf = reshape(Wmpf, d_hid+1, d_vis+1);
-model.W = -Wmpf(1:d_hid,1:d_vis);
+model.W = -Wmpf(1:d_hid,1:d_vis)';
 model.b = -Wmpf(1:d_hid,d_vis+1)';
 model.c = -Wmpf(d_hid+1,1:d_vis);
 end
