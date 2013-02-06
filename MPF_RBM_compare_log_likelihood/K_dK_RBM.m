@@ -7,7 +7,8 @@
 % (http://creativecommons.org/licenses/by-nc/3.0/)
 
 function [K, dK] = K_dK_RBM( theta, Xin )
-
+   
+    
     ndims = size(Xin,1); % for the bias unit
     nbatch = size( Xin, 2 );
     nparms = size( theta, 1 );
