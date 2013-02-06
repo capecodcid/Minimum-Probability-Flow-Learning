@@ -8,11 +8,11 @@
 
 addpath ../3rd_party_code/minFunc/
 
-description = 'd=50, 10000 samples'
+description = 'd=40, 100 samples'
 
 % initialize
-d = 24; % number of units
-nsamples = 98381; % number of training samples
+d = 40; % number of units
+nsamples = 100; % number of training samples
 %nsamples = 187769;
 %nsamples_new = 500000;
 
@@ -43,15 +43,15 @@ J = J + J';                             % !ath - symmetrize J
 J = J/2;
 J = J - diag(diag(J)); % set the diagonal so all the units are 0 bias
 J = J - diag(sum(J));
-% fprintf( 'Generating %d training samples\n', nsamples );
+fprintf( 'Generating %d training samples\n', nsamples );
 burnin = 100*d;
-% % and generate the test data ...
-% t_samp = tic();
-% Xall = sample_ising( J, nsamples, burnin, independent_steps );
-% t_samp = toc(t_samp);
-% fprintf( 'training sample generation in %f seconds \n', t_samp );
+% and generate the test data ...
+t_samp = tic();
+Xall = sample_ising( J, nsamples, burnin, independent_steps );
+t_samp = toc(t_samp);
+fprintf( 'training sample generation in %f seconds \n', t_samp );
 
-Xall = bint;
+%Xall = bint;
 
 % randomly initialize the parameter matrix we're going to try to learn
 % note that the bias units lie on the diagonal of J
