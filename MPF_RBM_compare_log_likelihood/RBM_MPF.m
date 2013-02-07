@@ -41,7 +41,7 @@ fprintf( 'estimating weight matrix via MPF\n' );
 % MPF
 Wmpf = Winit;
 minf_options = [];
-maxlinesearch = 1000;
+maxlinesearch = 100;
 minf_options.maxFunEvals = maxlinesearch;
 minf_options.maxIter = maxlinesearch;
 Wmpf = Wmpf(:);
