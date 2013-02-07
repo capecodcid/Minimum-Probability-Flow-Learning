@@ -127,6 +127,27 @@ end
 dK = (dloop + dloop')/(2*nbatch);
 K = Obj/nbatch;         
 
+%
+% Super written out - want to do loop over i and loop over J so that 
+%
+
+dloop = zeros(ndim,ndim);        % dK loop
+
+for k = 1:nbatch
+    x = X(:,k);
+    for d = 1:ndim
+        temp = zeros(ndim,1);
+        j_temp = 0;
+        for i = 1:ndim;
+            j_temp = j_temp + Jt(i,d)*x(i);
+            temp(i) = (-0.5 * (1-2*x(d)) * 2 * x(i));
+        end
+        j_temp = j_temp - Jt(d,d)*x(d);
+        termA = (2*j_temp + h(d))*(1-2*x(d));
+        temp(d) = (-0.5 * (1-2*x(d)));
+        dloop(:,d) = dloop(:,d) + exp(-0.5*termA)*temp;
+    end
+end
 
 
 
