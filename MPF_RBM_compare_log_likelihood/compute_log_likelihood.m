@@ -9,6 +9,8 @@
 function L = compute_log_likelihood( X, W )
     
 % generate a list of all possible states
+fprintf('generating a list of all possible states \n')
+list = tic();
 d = size(X, 1 );
 N = 2^d;
 binary_lookup = zeros( N, d );
@@ -23,17 +25,31 @@ for i = 2:N
     end
 end
 Xall = binary_lookup';
+list = toc(list);
+fprintf('took %f seconds \n',list)
+all_words_24 = Xall;
+save('all_words_24.mat','all_words_24');
+pause
 
 %whos Xall
 
 % calculate the energy for each of them
+fprintf('calculating energy for each states \n')
+list = tic();
 Eall = E_RBM( W, Xall );
+list = toc(list);
+fprintf('took %f seconds \n',list)
 % and the partition function
+pause
 Z = sum( exp( -Eall ) );
 logZ = log(Z);
 
 % calculate the energy for the data distribution
+fprintf('calculating energy for each states \n')
+list = tic();
 E = E_RBM( W, X );
+list = toc(list);
+fprintf('took %f seconds \n',list)
 
 L = -mean(E) - logZ;
 
