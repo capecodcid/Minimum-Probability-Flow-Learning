@@ -20,7 +20,7 @@ Jt = reshape( J_0, [ndim, ndim] );
 Jt = (Jt + Jt')/2;
 
 h = diag(Jt);
-Jt = Jt - diag(diag(J));
+Jt = Jt - diag(diag(Jt));
 
 %
 % Vectorized method #1
