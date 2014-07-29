@@ -8,21 +8,33 @@
 % Should write a document to accompany this showing where the
 % terms come from.
 %
-% Additionally this takes the model structs we have from our
+% Additionally this takes a form more akin to model structs we have from our
 % other projects
+%
+% needs to be optimized 2x slower than JS-D version
 
 % This software is made available under the Creative Commons
 % Attribution-Noncommercial License.
 % (http://creativecommons.org/licenses/by-nc/3.0/)
 
-function [K, dK] = ATH_K_dK_RBM( model, X )
+function [K, dK] = ATH_K_dK_RBM( Wmpf, X )
 
     [nvis nbatch] = size(X);
-    nhid = length(model.b);
+    nparams = size(Wmpf,1);
+    nhid = nparams/(nvis+1) -1;
     
-    W = model.W';
-    vbias = model.c;
-    hbias = model.b;
+    Wmpf = reshape(Wmpf, nhid+1, nvis+1);
+    W = -Wmpf(1:nhid,1:nvis);
+    hbias = -Wmpf(1:nhid,nvis+1)';
+    vbias = -Wmpf(nhid+1,1:nvis);
+    
+    
+    
+%    nhid = length(model.b);
+    
+%     W = W';
+%     vbias = model.c;
+%     hbias = model.b;
     
     K = 0;
     dK = zeros(nhid+1, nvis+1);  % this is so we can fit dK due to bias terms all in the same place
